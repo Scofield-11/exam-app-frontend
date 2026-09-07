@@ -18,7 +18,7 @@ function ExamHistoryTable({ history, setViewHistory, handleClearHistory }) {
       ) : (
         <div className="card shadow-sm border-0 mb-5 rounded-4 overflow-hidden">
           <div className="table-responsive">
-            <table className="table table-hover mb-0 align-middle">
+            <table className="table table-hover mb-0 align-middle" style={{ minWidth: '600px' }}>
               <thead className="table-light">
                 <tr>
                   <th className="py-3 px-4">Thời gian</th>
