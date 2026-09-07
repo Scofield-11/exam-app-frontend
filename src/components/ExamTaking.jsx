@@ -47,7 +47,8 @@ function ExamTaking({ examData, isInstantFeedback, backToList, fetchHistory, ope
     };
 
     const currentHistory = JSON.parse(localStorage.getItem('scofieldExamHistory') || '[]');
-    localStorage.setItem('scofieldExamHistory', JSON.stringify([newRecord, ...currentHistory]));
+    const updatedHistory = [newRecord, ...currentHistory].slice(0, 50); // Chỉ giữ lại 50 lịch sử mới nhất
+    localStorage.setItem('scofieldExamHistory', JSON.stringify(updatedHistory));
 
     fetchHistory();
   };
