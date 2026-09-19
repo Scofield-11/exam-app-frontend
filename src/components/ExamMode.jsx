@@ -72,7 +72,7 @@ function ExamMode() {
       setEditingExamId(examId);
       window.scrollTo(0, 0);
     } catch (error) {
-      toast.error("Lỗi lấy dữ liệu bài thi");
+      toast.error(error.response?.data?.detail || "Lỗi lấy dữ liệu bài thi");
     }
   };
 
@@ -137,7 +137,9 @@ function ExamMode() {
       setEditingExamId(null);
       fetchExamsList();
     } catch (error) {
-      toast.error("Lỗi lưu dữ liệu. Vui lòng kiểm tra lại thông tin nhập");
+      const detail = error.response?.data?.detail;
+      const msg = Array.isArray(detail) ? detail.map(e => e.msg).join('; ') : detail || "Lỗi lưu dữ liệu";
+      toast.error(msg);
     }
   };
 
@@ -147,7 +149,7 @@ function ExamMode() {
       await api.delete(`/exams/${examId}`);
       fetchExamsList();
     } catch (error) {
-      toast.error("Lỗi khi xóa bài thi");
+      toast.error(error.response?.data?.detail || "Lỗi khi xóa bài thi");
     }
   };
 
@@ -201,7 +203,7 @@ function ExamMode() {
       toast.success(`Đã lưu câu hỏi vào [${exam.title}]`);
       closeSaveModal();
     } catch (error) {
-      toast.error("Lỗi khi lưu câu hỏi!");
+      toast.error(error.response?.data?.detail || "Lỗi khi lưu câu hỏi!");
     }
   };
 
@@ -217,7 +219,7 @@ function ExamMode() {
       fetchExamsList();
       closeSaveModal();
     } catch (error) {
-      toast.error("Lỗi khi tạo và lưu đề mới!");
+      toast.error(error.response?.data?.detail || "Lỗi khi tạo và lưu đề mới!");
     }
   };
 

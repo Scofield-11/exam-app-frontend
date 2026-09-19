@@ -16,7 +16,9 @@ function ExamList({ exams, fetchExamsList, startExam, handleEditClick, handleDel
       setTitle("");
       fetchExamsList();
     } catch (error) {
-      toast.error("Lỗi import. Vui lòng kiểm tra lại định dạng dấu |");
+      const detail = error.response?.data?.detail;
+      const msg = Array.isArray(detail) ? detail.map(e => e.msg).join('; ') : detail || "Lỗi kết nối server";
+      toast.error(msg);
     }
   };
 
