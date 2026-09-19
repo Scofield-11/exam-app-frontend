@@ -3,10 +3,10 @@ import React from 'react';
 function ExamImportModal({ show, onClose, importText, setImportText, onImport }) {
   if (!show) return null;
   return (
-    <div className="modal d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1050, padding: '10px' }}>
+    <div className="modal d-block modal-backdrop-blur" style={{ zIndex: 1050, padding: '10px' }}>
       <div className="modal-dialog modal-dialog-centered modal-lg modal-fullscreen-md-down">
-        <div className="modal-content shadow-lg border-0 h-100">
-          <div className="modal-header bg-primary text-white">
+        <div className="modal-content shadow-lg border-0 rounded-4 overflow-hidden h-100">
+          <div className="modal-header modal-header-gradient">
             <h5 className="modal-title fw-bold">📥 Import thêm hàng loạt</h5>
             <button type="button" className="btn-close btn-close-white" onClick={onClose}></button>
           </div>
@@ -16,13 +16,13 @@ function ExamImportModal({ show, onClose, importText, setImportText, onImport })
               <code>Câu hỏi | Đáp án 1 | Đáp án 2 | Đáp án 3 | Đáp án 4 | Vị trí đúng</code>
             </p>
             <textarea
-              className="form-control mb-3"
+              className="form-control mb-3 rounded-3"
               rows="8"
               placeholder="Câu hỏi 1 | A | B | C | D | 1&#10;Câu hỏi 2 | A | B | C | D | 3"
               value={importText}
               onChange={e => setImportText(e.target.value)}
             ></textarea>
-            <button className="btn btn-success w-100 fw-bold btn-lg" onClick={onImport}>Gộp vào đề này</button>
+            <button className="btn btn-accent w-100 fw-bold btn-lg rounded-3" onClick={onImport}>Gộp vào đề này</button>
           </div>
         </div>
       </div>

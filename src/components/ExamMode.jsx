@@ -230,11 +230,17 @@ function ExamMode() {
       <div className="container mt-4" style={{ maxWidth: '900px' }}>
         <ExamSaveModal show={showSaveModal} onClose={closeSaveModal} newSaveTitle={newSaveTitle} setNewSaveTitle={setNewSaveTitle} saveToNew={saveToNew} saveToExisting={saveToExisting} exams={exams} />
         <button className="btn btn-outline-secondary fw-bold rounded-pill mb-4 px-4 shadow-sm" onClick={() => setViewHistory(null)}>← Quay lại danh sách</button>
-        <div className="alert alert-info shadow-sm border-0 mb-4 rounded-4 p-4">
-          <h4 className="fw-bold mb-3 text-primary">{viewHistory.title}</h4>
-          <p className="mb-0 text-dark">
+        <div className={`score-card animate-in mb-4 shadow-sm ${
+          viewHistory.score / viewHistory.total >= 0.8 ? 'score-card-success' :
+          viewHistory.score / viewHistory.total >= 0.5 ? 'score-card-warning' : 'score-card-danger'
+        }`}>
+          <div style={{fontSize: '2.5rem', marginBottom: '10px'}}>
+            {viewHistory.score === viewHistory.total ? '🏆' : viewHistory.score / viewHistory.total >= 0.8 ? '🎉' : viewHistory.score / viewHistory.total >= 0.5 ? '💪' : '📖'}
+          </div>
+          <h4 className="fw-bold mb-3 text-white">{viewHistory.title}</h4>
+          <p className="mb-0 text-white" style={{opacity: 0.9}}>
             Ngày làm: <strong>{viewHistory.date}</strong> <br/>
-            Kết quả: <strong className="text-primary fs-5">{viewHistory.score} / {viewHistory.total}</strong>
+            Kết quả: <strong className="fs-4">{viewHistory.score} / {viewHistory.total}</strong>
           </p>
         </div>
 
@@ -244,7 +250,7 @@ function ExamMode() {
           <div>
             <h5 className="text-danger fw-bold mb-4">Các câu làm sai:</h5>
             {viewHistory.wrongDetails && viewHistory.wrongDetails.map((q, i) => (
-              <div key={i} className="bg-white rounded-4 shadow-sm mb-4 p-4" style={{ transform: 'none' }}>
+              <div key={i} className="bg-white wrong-answer-card shadow-sm mb-4 p-4" style={{ transform: 'none' }}>
                 <div className="d-flex justify-content-between align-items-start mb-4">
                   <h5 className="mb-0 text-dark fw-bold">{q.question}</h5>
                   <button className="btn btn-sm btn-outline-warning fw-bold text-dark ms-3 text-nowrap" onClick={() => openSaveModal(q)} title="Lưu câu hỏi này">
@@ -259,7 +265,10 @@ function ExamMode() {
                     else if (q.user_ans === optNumber) btnClass = "btn-danger text-white border-danger";
                     return (
                       <div className="col-sm-6" key={oIdx}>
-                        <button className={`btn w-100 text-start py-2 fw-bold ${btnClass}`} style={{ cursor: 'default', borderRadius: '10px' }}>{opt}</button>
+                        <button className={`btn answer-option w-100 fw-bold ${btnClass}`} style={{ cursor: 'default' }}>
+                          <span className="answer-letter">{String.fromCharCode(65 + oIdx)}</span>
+                          {opt}
+                        </button>
                       </div>
                     );
                   }) : (

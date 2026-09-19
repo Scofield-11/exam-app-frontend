@@ -47,7 +47,7 @@ function ExamTaking({ examData, isInstantFeedback, backToList, fetchHistory, ope
     };
 
     const currentHistory = JSON.parse(localStorage.getItem('scofieldExamHistory') || '[]');
-    const updatedHistory = [newRecord, ...currentHistory].slice(0, 50); // Chỉ giữ lại 50 lịch sử mới nhất
+    const updatedHistory = [newRecord, ...currentHistory].slice(0, 50);
     localStorage.setItem('scofieldExamHistory', JSON.stringify(updatedHistory));
 
     fetchHistory();
@@ -78,117 +78,175 @@ function ExamTaking({ examData, isInstantFeedback, backToList, fetchHistory, ope
   const answeredCount = Object.keys(answers).length;
 
   return (
-    <div className="container mt-4" style={{ maxWidth: '1100px' }}>
-      <button className="btn btn-secondary mb-4 d-print-none" onClick={backToList}>← Quay lại danh sách</button>
-
+    <div className="container-fluid mt-3">
+      <button className="btn btn-outline-secondary rounded-pill fw-bold px-4 mb-4 d-print-none" onClick={backToList}>
+        ← Quay lại
+      </button>
+      
       <div className="row">
-        <div className="col-lg-8 mb-4">
-          <h3 className="mb-4">{examData.title}</h3>
-
-          {examData.questions.map((q, idx) => {
-            const userAns = answers[q.id];
-            const isAnswered = userAns !== undefined;
-            const showResult = isSubmitted || (isInstantFeedback && isAnswered);
-
-            return (
-              <div id={`question-${idx}`} key={q.id} className="bg-white rounded shadow-sm mb-4 p-4" style={{ transform: 'none' }}>
-                <div className="d-flex justify-content-between align-items-start mb-3">
-                  <h5 className="mb-0">Câu {idx + 1}: {q.question}</h5>
-                  <button className="btn btn-sm btn-outline-warning fw-bold text-dark ms-3 text-nowrap d-print-none" onClick={() => openSaveModal(q)} title="Lưu câu hỏi này">⭐ Lưu</button>
-                </div>
-                <div className="row">
-                  {q.options.map((opt, oIdx) => {
-                    const optNumber = oIdx + 1;
-                    let btnClass = "btn-outline-secondary";
-                    if (showResult) {
-                      if (optNumber === q.correct_ans) btnClass = "btn-success text-white border-success";
-                      else if (userAns === optNumber && userAns !== q.correct_ans) btnClass = "btn-danger text-white border-danger";
-                    } else if (userAns === optNumber) btnClass = "btn-primary";
-
-                    return (
-                      <div className="col-sm-6 mb-3" key={oIdx}>
-                        <button className={`btn w-100 text-start py-2 ${btnClass}`} onClick={() => handleSelect(q.id, optNumber)}>{opt}</button>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            );
-          })}
+        <div className="col-lg-8">
+          <h3 className="mb-4 fw-bold d-flex align-items-center gap-2 flex-wrap">
+            {examData.title}
+            {isSubmitted 
+              ? <span className="badge bg-success fs-6 fw-normal">✅ Đã nộp</span>
+              : <span className="badge bg-accent-light fs-6 fw-normal" style={{color: 'var(--accent)'}}>Đang làm</span>
+            }
+          </h3>
 
           {!isSubmitted ? (
-            <button className="btn btn-primary btn-lg w-100 mb-5 shadow-sm d-print-none" onClick={handleSubmit}>Nộp bài</button>
-          ) : (
-            <div className="alert alert-info mt-4 mb-5 shadow-sm border-0">
-              <h4 className="fw-bold">Kết quả: {score} / {totalQuestions}</h4>
-              {wrongQuestions.length > 0 && (
-                <div className="mt-4">
-                  <strong className="text-danger fs-5">Các câu làm sai:</strong>
-                  <div className="mt-3">
-                    {wrongQuestions.map((q) => {
-                      const userAns = answers[q.id];
+            <>
+              {examData.questions.map((q, idx) => (
+                <div id={`question-${idx}`} key={q.id} className="bg-white rounded-4 shadow-sm mb-4 p-4">
+                  <div className="d-flex justify-content-between align-items-start mb-3">
+                    <div className="d-flex align-items-center gap-2">
+                      <span className="question-number">{idx + 1}</span>
+                      <h5 className="mb-0 fw-bold">{q.question}</h5>
+                    </div>
+                    <button className="btn btn-sm btn-outline-warning d-print-none" onClick={() => openSaveModal(q)}>
+                      ⭐ Lưu
+                    </button>
+                  </div>
+                  <div className="row">
+                    {q.options.map((opt, oIdx) => {
+                      const optNumber = oIdx + 1;
+                      const letter = String.fromCharCode(64 + optNumber);
+                      let btnClass = "btn-outline-secondary";
+                      if (answers[q.id] === optNumber) {
+                        btnClass = isInstantFeedback 
+                          ? (optNumber === q.correct_ans ? 'btn-success text-white' : 'btn-danger text-white') 
+                          : 'btn-primary text-white';
+                      }
+                      if (isInstantFeedback && answers[q.id] && optNumber === q.correct_ans) {
+                        btnClass = 'btn-success text-white';
+                      }
+                      
                       return (
-                        <div key={q.id} className="bg-white rounded shadow-sm mb-4 p-4" style={{ transform: 'none' }}>
-                          <div className="d-flex justify-content-between align-items-start mb-3">
-                            <h5 className="mb-0 text-dark">{q.question}</h5>
-                            <button className="btn btn-sm btn-outline-warning fw-bold text-dark ms-3 text-nowrap d-print-none" onClick={() => openSaveModal(q)} title="Lưu câu hỏi này">⭐ Lưu</button>
-                          </div>
-                          <div className="row">
-                            {q.options.map((opt, oIdx) => {
-                              const optNumber = oIdx + 1;
-                              let btnClass = "btn-outline-secondary";
-                              if (optNumber === q.correct_ans) btnClass = "btn-success text-white border-success";
-                              else if (userAns === optNumber && userAns !== q.correct_ans) btnClass = "btn-danger text-white border-danger";
-                              return (
-                                <div className="col-sm-6 mb-3" key={oIdx}>
-                                  <button className={`btn w-100 text-start py-2 ${btnClass}`} style={{ cursor: 'default' }}>{opt}</button>
-                                </div>
-                              );
-                            })}
-                          </div>
+                        <div className="col-sm-6 mb-3" key={oIdx}>
+                          <button 
+                            className={`btn w-100 answer-option ${btnClass}`} 
+                            onClick={() => handleSelect(q.id, optNumber)}
+                            style={{ textAlign: 'left', position: 'relative' }}
+                          >
+                            <span className="answer-letter">{letter}</span>
+                            {opt}
+                          </button>
                         </div>
                       );
                     })}
                   </div>
-                  <div className="d-flex flex-wrap gap-3 mt-4 d-print-none">
-                    <button className="btn btn-warning fw-bold px-4" onClick={() => startExam(examData.id)}>Làm lại bài này</button>
-                    <button className="btn btn-primary fw-bold px-4" onClick={handleCreateFromCurrentMistakes}>Tạo đề mới từ câu sai</button>
-                    <button className="btn btn-secondary fw-bold px-4" onClick={() => window.print()}>🖨️ In kết quả (PDF)</button>
-                  </div>
                 </div>
+              ))}
+              <button className="btn btn-accent btn-lg w-100 mb-5 shadow d-print-none rounded-3" onClick={handleSubmit}>
+                📤 Nộp bài
+              </button>
+            </>
+          ) : (
+            <div className="mb-5 animate-in">
+              <div className={`score-card mb-4 animate-in ${
+                score/totalQuestions >= 0.8 ? 'score-card-success' :
+                score/totalQuestions >= 0.5 ? 'score-card-warning' : 'score-card-danger'
+              }`}>
+                <div style={{fontSize: '3rem'}}>
+                  {score === totalQuestions ? '🏆' : score/totalQuestions >= 0.8 ? '🎉' : score/totalQuestions >= 0.5 ? '💪' : '📖'}
+                </div>
+                <h2 className="fw-bold mb-1">{score} / {totalQuestions}</h2>
+                <p className="mb-0" style={{opacity: 0.85}}>
+                  {score === totalQuestions ? 'Tuyệt vời! Điểm tuyệt đối!' :
+                   score/totalQuestions >= 0.8 ? 'Xuất sắc! Tiếp tục phát huy!' :
+                   score/totalQuestions >= 0.5 ? 'Khá tốt! Cần ôn thêm một chút.' :
+                   'Cần ôn luyện thêm nhiều hơn nữa.'}
+                </p>
+              </div>
+
+              {wrongQuestions.length > 0 && (
+                <>
+                  <h4 className="fw-bold mb-4 gradient-text">Các câu trả lời sai ({wrongQuestions.length}):</h4>
+                  {wrongQuestions.map((q) => {
+                    const idx = examData.questions.findIndex(eq => eq.id === q.id);
+                    return (
+                      <div key={q.id} className="bg-white wrong-answer-card shadow-sm mb-4 p-4">
+                        <div className="d-flex justify-content-between align-items-start mb-3">
+                          <div className="d-flex align-items-center gap-2">
+                            <span className="question-number">{idx + 1}</span>
+                            <h5 className="mb-0 fw-bold">{q.question}</h5>
+                          </div>
+                          <button className="btn btn-sm btn-outline-warning d-print-none" onClick={() => openSaveModal(q)}>
+                            ⭐ Lưu
+                          </button>
+                        </div>
+                        <div className="row">
+                          {q.options.map((opt, oIdx) => {
+                            const optNumber = oIdx + 1;
+                            const letter = String.fromCharCode(64 + optNumber);
+                            let btnClass = "btn-outline-secondary";
+                            if (optNumber === q.correct_ans) btnClass = 'btn-success text-white';
+                            else if (answers[q.id] === optNumber) btnClass = 'btn-danger text-white';
+
+                            return (
+                              <div className="col-sm-6 mb-3" key={oIdx}>
+                                <button 
+                                  className={`btn w-100 answer-option ${btnClass}`}
+                                  style={{ textAlign: 'left', position: 'relative', cursor: 'default' }}
+                                  disabled
+                                >
+                                  <span className="answer-letter">{letter}</span>
+                                  {opt}
+                                </button>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </>
               )}
+              
+              <div className="d-flex flex-wrap gap-3 mt-4 d-print-none">
+                <button className="btn btn-warning fw-bold px-4 rounded-pill" onClick={() => startExam(examData.id)}>
+                  🔄 Làm lại
+                </button>
+                <button className="btn btn-accent fw-bold px-4 rounded-pill" onClick={handleCreateFromCurrentMistakes}>
+                  📝 Tạo đề từ câu sai
+                </button>
+                <button className="btn btn-outline-secondary fw-bold px-4 rounded-pill" onClick={() => window.print()}>
+                  🖨️ In kết quả
+                </button>
+              </div>
             </div>
           )}
         </div>
 
-        <div className="col-lg-4 d-print-none order-first order-lg-last">
-          <div className="card shadow-sm border-0 sticky-lg-top" style={{ top: '12px', zIndex: 1000 }}>
+        <div className="col-lg-4 d-print-none">
+          <div className="card border-0 sticky-lg-top glass-card shadow" style={{ top: '12px', zIndex: 1000 }}>
             <div className="card-body">
-              <h5 className="mb-4 text-center">Bảng điều hướng</h5>
-
-              {!isSubmitted && (
-                <div className="mb-4">
-                  <div className="d-flex justify-content-between text-muted fw-bold mb-2" style={{ fontSize: '0.9rem' }}>
-                    <span>Đã làm: {answeredCount} / {totalQuestions} câu</span>
-                    <span>{Math.round((answeredCount / totalQuestions) * 100)}%</span>
-                  </div>
-                  <div className="progress shadow-sm" style={{ height: '8px' }}>
-                    <div className="progress-bar bg-primary" role="progressbar" style={{ width: `${(answeredCount / totalQuestions) * 100}%` }}></div>
-                  </div>
-                </div>
-              )}
-
-              <div className="question-navigator">
+              <h6 className="mb-3 text-center fw-bold text-muted text-uppercase" style={{fontSize: '0.75rem', letterSpacing: '1px'}}>Bảng điều hướng</h6>
+              <div className="d-flex justify-content-between mb-2 small text-muted">
+                <span>Đã chọn: {answeredCount}/{totalQuestions}</span>
+                <span>{Math.round((answeredCount / totalQuestions) * 100)}%</span>
+              </div>
+              <div className="progress-accent shadow-sm mb-4">
+                <div className="progress-bar" role="progressbar" style={{ width: `${(answeredCount / totalQuestions) * 100}%` }}></div>
+              </div>
+              <div className="d-flex flex-wrap gap-2 justify-content-center">
                 {examData.questions.map((q, idx) => {
-                  const userAns = answers[q.id];
-                  const isAnswered = userAns !== undefined;
-                  let btnColorClass = "btn-outline-secondary";
+                  let btnClass = "btn-outline-secondary";
                   if (isSubmitted) {
-                    if (userAns === q.correct_ans) btnColorClass = "btn-success text-white";
-                    else if (isAnswered) btnColorClass = "btn-danger text-white";
-                  } else if (isAnswered) btnColorClass = "btn-primary";
+                    btnClass = answers[q.id] === q.correct_ans ? 'btn-success text-white' : (answers[q.id] ? 'btn-danger text-white' : 'btn-outline-secondary');
+                  } else if (answers[q.id]) {
+                    if (isInstantFeedback) {
+                      btnClass = answers[q.id] === q.correct_ans ? 'btn-success text-white' : 'btn-danger text-white';
+                    } else {
+                      btnClass = 'btn-primary text-white';
+                    }
+                  }
                   return (
-                    <button key={idx} className={`btn ${btnColorClass} fw-bold nav-question-btn`} style={{ width: '48px', height: '48px', padding: '0', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => scrollToQuestion(idx)}>
+                    <button
+                      key={q.id}
+                      onClick={() => scrollToQuestion(idx)}
+                      className={`btn nav-question-btn p-0 d-flex align-items-center justify-content-center fw-bold ${btnClass}`}
+                      style={{ width: '44px', height: '44px' }}
+                    >
                       {idx + 1}
                     </button>
                   );
