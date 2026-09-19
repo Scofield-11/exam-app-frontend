@@ -6,6 +6,15 @@ import confetti from 'canvas-confetti';
 function ExamTaking({ examData, isInstantFeedback, backToList, fetchHistory, openSaveModal, startExam }) {
   const [answers, setAnswers] = useState({});
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [showConfirmBack, setShowConfirmBack] = useState(false);
+
+  const handleBackClick = () => {
+    if (!isSubmitted && Object.keys(answers).length > 0) {
+      setShowConfirmBack(true);
+    } else {
+      backToList();
+    }
+  };
 
   const handleSelect = (qId, optIndex) => {
     if (isSubmitted) return;
@@ -79,7 +88,36 @@ function ExamTaking({ examData, isInstantFeedback, backToList, fetchHistory, ope
 
   return (
     <div className="container-fluid mt-3">
-      <button className="btn btn-outline-secondary rounded-pill fw-bold px-4 mb-4 d-print-none" onClick={backToList}>
+      {/* Confirm Back Modal */}
+      {showConfirmBack && (
+        <div className="modal d-block modal-backdrop-blur" style={{ zIndex: 1050, padding: '10px' }}>
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content shadow-lg border-0 rounded-4">
+              <div className="modal-header bg-danger text-white border-0">
+                <h5 className="modal-title fw-bold">⚠️ Xác nhận thoát</h5>
+                <button type="button" className="btn-close btn-close-white" onClick={() => setShowConfirmBack(false)}></button>
+              </div>
+              <div className="modal-body p-4 text-center">
+                <h5 className="mb-3 text-dark">Bạn đang làm dở bài thi!</h5>
+                <p className="text-muted mb-4">Nếu thoát bây giờ, tiến trình của bạn sẽ không được lưu lại. Bạn có muốn nộp bài luôn không?</p>
+                <div className="d-flex flex-column gap-2">
+                  <button className="btn btn-accent fw-bold rounded-pill" onClick={() => { setShowConfirmBack(false); handleSubmit(); }}>
+                    📤 Nộp bài ngay
+                  </button>
+                  <button className="btn btn-outline-danger fw-bold rounded-pill" onClick={backToList}>
+                    🗑️ Hủy bài & Thoát
+                  </button>
+                  <button className="btn btn-light fw-bold rounded-pill text-muted" onClick={() => setShowConfirmBack(false)}>
+                    Tiếp tục làm bài
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <button className="btn btn-outline-secondary rounded-pill fw-bold px-4 mb-4 d-print-none" onClick={handleBackClick}>
         ← Quay lại
       </button>
       
@@ -146,11 +184,11 @@ function ExamTaking({ examData, isInstantFeedback, backToList, fetchHistory, ope
                 score/totalQuestions >= 0.8 ? 'score-card-success' :
                 score/totalQuestions >= 0.5 ? 'score-card-warning' : 'score-card-danger'
               }`}>
-                <div style={{fontSize: '3rem'}}>
+                <div style={{fontSize: '2.5rem', marginBottom: '8px'}}>
                   {score === totalQuestions ? '🏆' : score/totalQuestions >= 0.8 ? '🎉' : score/totalQuestions >= 0.5 ? '💪' : '📖'}
                 </div>
-                <h2 className="fw-bold mb-1">{score} / {totalQuestions}</h2>
-                <p className="mb-0" style={{opacity: 0.85}}>
+                <h3 className="fw-bold mb-1">{score} / {totalQuestions}</h3>
+                <p className="mb-0 small" style={{opacity: 0.9}}>
                   {score === totalQuestions ? 'Tuyệt vời! Điểm tuyệt đối!' :
                    score/totalQuestions >= 0.8 ? 'Xuất sắc! Tiếp tục phát huy!' :
                    score/totalQuestions >= 0.5 ? 'Khá tốt! Cần ôn thêm một chút.' :
@@ -212,12 +250,15 @@ function ExamTaking({ examData, isInstantFeedback, backToList, fetchHistory, ope
                 <button className="btn btn-outline-secondary fw-bold px-4 rounded-pill" onClick={() => window.print()}>
                   🖨️ In kết quả
                 </button>
+                <button className="btn btn-secondary fw-bold px-4 rounded-pill" onClick={backToList}>
+                  ← Quay lại danh sách
+                </button>
               </div>
             </div>
           )}
         </div>
 
-        <div className="col-lg-4 d-print-none">
+        <div className="col-lg-4 d-print-none order-first order-lg-last mb-4 mb-lg-0">
           <div className="card border-0 sticky-lg-top glass-card shadow" style={{ top: '12px', zIndex: 1000 }}>
             <div className="card-body">
               <h6 className="mb-3 text-center fw-bold text-muted text-uppercase" style={{fontSize: '0.75rem', letterSpacing: '1px'}}>Bảng điều hướng</h6>
@@ -228,7 +269,7 @@ function ExamTaking({ examData, isInstantFeedback, backToList, fetchHistory, ope
               <div className="progress-accent shadow-sm mb-4">
                 <div className="progress-bar" role="progressbar" style={{ width: `${(answeredCount / totalQuestions) * 100}%` }}></div>
               </div>
-              <div className="d-flex flex-wrap gap-2 justify-content-center">
+              <div className="question-navigator d-flex flex-wrap gap-2 justify-content-center">
                 {examData.questions.map((q, idx) => {
                   let btnClass = "btn-outline-secondary";
                   if (isSubmitted) {

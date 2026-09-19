@@ -60,6 +60,13 @@ body {
   gap: 6px;
 }
 
+/* Nút nhỏ không cần ép chiều cao 44px (ví dụ nút Lưu) */
+.btn-sm {
+  min-height: 32px !important;
+  font-size: 0.85rem !important;
+  padding: 0.25rem 0.75rem !important;
+}
+
 .btn:active {
   transform: scale(0.97);
 }
@@ -213,11 +220,11 @@ select.form-select:focus {
 /* Responsive — thanh cuộn ngang trên mobile */
 @media (max-width: 991.98px) {
   .question-navigator {
-    flex-wrap: nowrap;
+    flex-wrap: nowrap !important;
     overflow-x: auto;
     overflow-y: visible;
     max-height: none;
-    justify-content: flex-start;
+    justify-content: flex-start !important;
     padding-bottom: 8px;
     -webkit-overflow-scrolling: touch;
     scroll-snap-type: x proximity;
@@ -295,7 +302,7 @@ select.form-select:focus {
   background: var(--accent-gradient);
   color: #fff;
   border-radius: var(--radius-lg);
-  padding: 2rem;
+  padding: 1.5rem;
   text-align: center;
 }
 

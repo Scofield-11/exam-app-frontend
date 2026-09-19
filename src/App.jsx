@@ -6,7 +6,10 @@ function App() {
   return (
     <div className="container-fluid py-4" style={{ maxWidth: '1200px' }}>
       <header className="text-center mb-4">
-        <h1 className="fw-bold display-6 gradient-text">📝 Thi Trắc Nghiệm</h1>
+        <h1 className="fw-bold display-6 gradient-text d-flex align-items-center justify-content-center gap-2">
+          <img src="/sea_15651557.ico" alt="logo" style={{ width: '40px', height: '40px', objectFit: 'contain' }} />
+          Thi Trắc Nghiệm
+        </h1>
         <p className="text-muted mb-0 mt-1">Ôn luyện hiệu quả — Ghi nhớ lâu dài</p>
       </header>
       <ExamMode />
