@@ -441,6 +441,12 @@ select.form-select:focus {
   transition: all var(--transition);
 }
 
+.correct-answer-card {
+  border-left: 4px solid #10b981 !important; /* success green */
+  border-radius: var(--radius) !important;
+  transition: all var(--transition);
+}
+
 
 /* ==============================
    PRINT

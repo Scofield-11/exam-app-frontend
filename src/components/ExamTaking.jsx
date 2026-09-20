@@ -196,49 +196,48 @@ function ExamTaking({ examData, isInstantFeedback, backToList, fetchHistory, ope
                 </p>
               </div>
 
-              {wrongQuestions.length > 0 && (
-                <>
-                  <h4 className="fw-bold mb-4 gradient-text">Các câu trả lời sai ({wrongQuestions.length}):</h4>
-                  {wrongQuestions.map((q) => {
-                    const idx = examData.questions.findIndex(eq => eq.id === q.id);
-                    return (
-                      <div key={q.id} className="bg-white wrong-answer-card shadow-sm mb-4 p-4">
-                        <div className="d-flex justify-content-between align-items-start mb-3">
-                          <div className="d-flex align-items-center gap-2">
-                            <span className="question-number">{idx + 1}</span>
-                            <h5 className="mb-0 fw-bold">{q.question}</h5>
-                          </div>
-                          <button className="btn btn-sm btn-outline-warning d-print-none" onClick={() => openSaveModal(q)}>
-                            ⭐ Lưu
-                          </button>
-                        </div>
-                        <div className="row">
-                          {q.options.map((opt, oIdx) => {
-                            const optNumber = oIdx + 1;
-                            const letter = String.fromCharCode(64 + optNumber);
-                            let btnClass = "btn-outline-secondary";
-                            if (optNumber === q.correct_ans) btnClass = 'btn-success text-white';
-                            else if (answers[q.id] === optNumber) btnClass = 'btn-danger text-white';
-
-                            return (
-                              <div className="col-sm-6 mb-3" key={oIdx}>
-                                <button 
-                                  className={`btn w-100 answer-option ${btnClass}`}
-                                  style={{ textAlign: 'left', position: 'relative', cursor: 'default' }}
-                                  disabled
-                                >
-                                  <span className="answer-letter">{letter}</span>
-                                  {opt}
-                                </button>
-                              </div>
-                            );
-                          })}
-                        </div>
+              <h4 className="fw-bold mb-4 gradient-text">Chi tiết bài làm:</h4>
+              {examData.questions.map((q, idx) => {
+                const isCorrect = answers[q.id] === q.correct_ans;
+                const cardClass = isCorrect ? 'correct-answer-card' : 'wrong-answer-card';
+                return (
+                  <div id={`question-${idx}`} key={q.id} className={`bg-white ${cardClass} shadow-sm mb-4 p-4`}>
+                    <div className="d-flex justify-content-between align-items-start mb-3">
+                      <div className="d-flex align-items-center gap-2">
+                        <span className="question-number">{idx + 1}</span>
+                        <h5 className="mb-0 fw-bold">{q.question}</h5>
                       </div>
-                    );
-                  })}
-                </>
-              )}
+                      {!isCorrect && (
+                        <button className="btn btn-sm btn-outline-warning d-print-none" onClick={() => openSaveModal(q)}>
+                          ⭐ Lưu
+                        </button>
+                      )}
+                    </div>
+                    <div className="row">
+                      {q.options.map((opt, oIdx) => {
+                        const optNumber = oIdx + 1;
+                        const letter = String.fromCharCode(64 + optNumber);
+                        let btnClass = "btn-outline-secondary";
+                        if (optNumber === q.correct_ans) btnClass = 'btn-success text-white';
+                        else if (answers[q.id] === optNumber) btnClass = 'btn-danger text-white';
+
+                        return (
+                          <div className="col-sm-6 mb-3" key={oIdx}>
+                            <button 
+                              className={`btn w-100 answer-option ${btnClass}`}
+                              style={{ textAlign: 'left', position: 'relative', cursor: 'default' }}
+                              disabled
+                            >
+                              <span className="answer-letter">{letter}</span>
+                              {opt}
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
               
               <div className="d-flex flex-wrap gap-3 mt-4 d-print-none">
                 <button className="btn btn-warning fw-bold px-4 rounded-pill" onClick={() => startExam(examData.id)}>
