@@ -265,7 +265,7 @@ function ExamMode() {
                     else if (q.user_ans === optNumber) btnClass = "btn-danger text-white border-danger";
                     return (
                       <div className="col-sm-6" key={oIdx}>
-                        <button className={`btn answer-option w-100 fw-bold ${btnClass}`} style={{ cursor: 'default' }}>
+                        <button className={`btn answer-option w-100 fw-bold ${btnClass}`} style={{ cursor: 'default', pointerEvents: 'none', textAlign: 'left' }}>
                           <span className="answer-letter">{String.fromCharCode(65 + oIdx)}</span>
                           {opt}
                         </button>

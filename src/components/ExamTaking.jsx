@@ -225,8 +225,7 @@ function ExamTaking({ examData, isInstantFeedback, backToList, fetchHistory, ope
                           <div className="col-sm-6 mb-3" key={oIdx}>
                             <button 
                               className={`btn w-100 answer-option ${btnClass}`}
-                              style={{ textAlign: 'left', position: 'relative', cursor: 'default' }}
-                              disabled
+                              style={{ textAlign: 'left', position: 'relative', cursor: 'default', pointerEvents: 'none' }}
                             >
                               <span className="answer-letter">{letter}</span>
                               {opt}
