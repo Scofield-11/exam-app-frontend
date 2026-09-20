@@ -422,12 +422,14 @@ select.form-select:focus {
   border-radius: 4px;
   overflow: hidden;
   background-color: #e9ecef;
+  display: flex;
 }
 
 .progress-accent .progress-bar {
   background: var(--accent-gradient);
   transition: width 0.5s ease;
   border-radius: 4px;
+  height: 100%;
 }
 
 
