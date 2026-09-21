@@ -1,6 +1,35 @@
 import React from 'react';
 
 function ExamEditForm({ editTitle, setEditTitle, editQuestions, handleDeleteQuestion, handleUpdateQuestion, handleAddNewQuestionToEdit, setShowImportModal, handleSaveEdit, setEditingExamId }) {
+  const handleExportText = () => {
+    const rawText = editQuestions.map(q => `${q.question} | ${q.options[0]} | ${q.options[1]} | ${q.options[2]} | ${q.options[3]} | ${q.correct_ans}`).join('\n');
+    const blob = new Blob([rawText], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${editTitle || 'De_thi'}_export.txt`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleExportExcel = () => {
+    import('xlsx').then(XLSX => {
+      const data = editQuestions.map(q => ({
+        "Câu hỏi": q.question,
+        "Đáp án A": q.options[0],
+        "Đáp án B": q.options[1],
+        "Đáp án C": q.options[2],
+        "Đáp án D": q.options[3],
+        "Vị trí đúng (1-4)": q.correct_ans
+      }));
+      const ws = XLSX.utils.json_to_sheet(data);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Câu hỏi");
+      XLSX.writeFile(wb, `${editTitle || 'De_thi'}_export.xlsx`);
+    });
+  };
+
   return (
     <div className="card shadow-sm border-0 mb-5 rounded-4 overflow-hidden">
       <div className="card-header modal-header-gradient fw-bold d-flex justify-content-between align-items-center">
@@ -40,12 +69,18 @@ function ExamEditForm({ editTitle, setEditTitle, editQuestions, handleDeleteQues
           </div>
         ))}
 
-        <div className="d-flex gap-2 mb-4">
+        <div className="d-flex flex-wrap gap-2 mb-4">
           <button className="btn btn-outline-secondary flex-grow-1 border-dashed py-2" onClick={handleAddNewQuestionToEdit}>
             + Thêm 1 câu hỏi trống
           </button>
           <button className="btn btn-outline-primary flex-grow-1 border-dashed py-2 fw-bold" onClick={() => setShowImportModal(true)}>
-            📥 Import thêm nhanh (Paste)
+            📥 Import nhanh (Paste)
+          </button>
+          <button className="btn btn-outline-info flex-grow-1 border-dashed py-2 fw-bold" onClick={handleExportText}>
+            📄 Xuất Text
+          </button>
+          <button className="btn btn-outline-success flex-grow-1 border-dashed py-2 fw-bold" onClick={handleExportExcel}>
+            📊 Xuất Excel
           </button>
         </div>
 
