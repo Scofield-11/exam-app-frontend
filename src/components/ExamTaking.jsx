@@ -86,6 +86,15 @@ function ExamTaking({ examData, isInstantFeedback, backToList, fetchHistory, ope
   const totalQuestions = examData.questions.length;
   const answeredCount = Object.keys(answers).length;
 
+  const handleCopyQuestion = (q) => {
+    const textToCopy = `${q.question}\nA. ${q.options[0]}\nB. ${q.options[1]}\nC. ${q.options[2]}\nD. ${q.options[3]}`;
+    navigator.clipboard.writeText(textToCopy).then(() => {
+      toast.info("📋 Đã sao chép để tra cứu!");
+    }).catch(() => {
+      toast.error("Lỗi khi sao chép!");
+    });
+  };
+
   return (
     <div className="container-fluid mt-3">
       {/* Confirm Back Modal */}
@@ -140,9 +149,14 @@ function ExamTaking({ examData, isInstantFeedback, backToList, fetchHistory, ope
                       <span className="question-number">{idx + 1}</span>
                       <h5 className="mb-0 fw-bold">{q.question}</h5>
                     </div>
-                    <button className="btn btn-sm btn-outline-warning d-print-none" onClick={() => openSaveModal(q)}>
-                      ⭐ Lưu
-                    </button>
+                    <div className="d-flex gap-2">
+                      <button className="btn btn-sm btn-outline-info d-print-none" onClick={() => handleCopyQuestion(q)} title="Sao chép câu hỏi">
+                        📋 Chép
+                      </button>
+                      <button className="btn btn-sm btn-outline-warning d-print-none" onClick={() => openSaveModal(q)}>
+                        ⭐ Lưu
+                      </button>
+                    </div>
                   </div>
                   <div className="row">
                     {q.options.map((opt, oIdx) => {
@@ -207,11 +221,16 @@ function ExamTaking({ examData, isInstantFeedback, backToList, fetchHistory, ope
                         <span className="question-number">{idx + 1}</span>
                         <h5 className="mb-0 fw-bold">{q.question}</h5>
                       </div>
-                      {!isCorrect && (
-                        <button className="btn btn-sm btn-outline-warning d-print-none" onClick={() => openSaveModal(q)}>
-                          ⭐ Lưu
+                      <div className="d-flex gap-2">
+                        <button className="btn btn-sm btn-outline-info d-print-none" onClick={() => handleCopyQuestion(q)} title="Sao chép câu hỏi">
+                          📋 Chép
                         </button>
-                      )}
+                        {!isCorrect && (
+                          <button className="btn btn-sm btn-outline-warning d-print-none" onClick={() => openSaveModal(q)}>
+                            ⭐ Lưu
+                          </button>
+                        )}
+                      </div>
                     </div>
                     <div className="row">
                       {q.options.map((opt, oIdx) => {

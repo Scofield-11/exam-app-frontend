@@ -29,6 +29,13 @@ function ExamMode() {
   const [importText, setImportText] = useState("");
   const [isLoading, setIsLoading] = useState(true);
 
+  const handleCopyQuestion = (q) => {
+    const textToCopy = `${q.question}\nA. ${q.options[0]}\nB. ${q.options[1]}\nC. ${q.options[2]}\nD. ${q.options[3]}`;
+    navigator.clipboard.writeText(textToCopy).then(() => {
+      toast.info("📋 Đã sao chép để tra cứu!");
+    });
+  };
+
   const fetchHistory = () => {
     const historyData = JSON.parse(localStorage.getItem('scofieldExamHistory') || '[]');
     setHistory(historyData);
@@ -253,9 +260,14 @@ function ExamMode() {
               <div key={i} className="bg-white wrong-answer-card shadow-sm mb-4 p-4" style={{ transform: 'none' }}>
                 <div className="d-flex justify-content-between align-items-start mb-4">
                   <h5 className="mb-0 text-dark fw-bold">{q.question}</h5>
-                  <button className="btn btn-sm btn-outline-warning fw-bold text-dark ms-3 text-nowrap" onClick={() => openSaveModal(q)} title="Lưu câu hỏi này">
-                    ⭐ Lưu
-                  </button>
+                  <div className="d-flex gap-2 ms-3">
+                    <button className="btn btn-sm btn-outline-info fw-bold text-dark text-nowrap" onClick={() => handleCopyQuestion(q)} title="Sao chép câu hỏi">
+                      📋 Chép
+                    </button>
+                    <button className="btn btn-sm btn-outline-warning fw-bold text-dark text-nowrap" onClick={() => openSaveModal(q)} title="Lưu câu hỏi này">
+                      ⭐ Lưu
+                    </button>
+                  </div>
                 </div>
                 <div className="row g-2">
                   {q.options ? q.options.map((opt, oIdx) => {
